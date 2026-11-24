@@ -1,132 +1,200 @@
-export type ViolationType = 'garbage' | 'spitting' | 'littering';
-export type ViolationStatus = 'pending' | 'paid' | 'disputed' | 'waived';
-export type ViolationSource = 'camera' | 'cctv';
-export type EscalationLevel = 0 | 1 | 2 | 3;
+export type Severity = 'Minor' | 'Major' | 'Critical';
+export type DeviationCategory =
+  | 'Process'
+  | 'Equipment'
+  | 'Analytical'
+  | 'Documentation'
+  | 'Environmental'
+  | 'Material'
+  | 'Utility'
+  | 'Other';
+export type InvestigationStatus = 'draft' | 'in_progress' | 'under_review' | 'closed';
+export type SourceType = 'pdf' | 'text' | 'email';
+export type InvestigationMethod = '5 Whys' | 'Fishbone';
+export type Confidence = 'High' | 'Medium' | 'Low';
+export type CapaType = 'corrective' | 'preventive';
+export type CapaStatus = 'proposed' | 'approved' | 'in_progress' | 'completed';
+export type GapSignificance = 'High' | 'Medium' | 'Low';
+export type GapStatus = 'open' | 'resolved';
 
-export interface Citizen {
+export interface FiveWhy {
+  id?: string;
+  investigation_id?: string;
+  step_number: number;
+  question: string;
+  answer: string;
+  is_root_cause: boolean;
+}
+
+export interface FishboneCause {
+  cause: string;
+  evidence: string;
+}
+
+export interface FishboneCategory {
+  id?: string;
+  investigation_id?: string;
+  category: string;
+  causes: FishboneCause[];
+}
+
+export interface RootCause {
+  id?: string;
+  investigation_id?: string;
+  description: string;
+  category: string;
+  contributing_factors: string[];
+  confidence: Confidence;
+  evidence_summary: string;
+  confirmed: boolean;
+}
+
+export interface EvidenceGap {
+  id?: string;
+  investigation_id?: string;
+  description: string;
+  significance: GapSignificance;
+  status: GapStatus;
+}
+
+export interface Capa {
+  id?: string;
+  investigation_id?: string;
+  type: CapaType;
+  description: string;
+  rationale: string;
+  owner: string;
+  target_date: string | null;
+  status: CapaStatus;
+}
+
+export interface Investigation {
   id: string;
-  full_name: string;
-  aadhaar_number: string | null;
-  phone: string | null;
-  address: string | null;
-  face_descriptor: number[];
-  photo_url: string | null;
-  date_registered: string;
+  title: string;
+  deviation_number: string | null;
+  product_name: string;
+  batch_number: string;
+  deviation_date: string | null;
+  deviation_description: string;
+  deviation_category: string;
+  severity: Severity;
+  process_step: string;
+  equipment_involved: string;
+  material_impact: string;
+  initial_risk_assessment: string;
+  investigation_method: InvestigationMethod;
+  status: InvestigationStatus;
+  source_type: SourceType;
+  source_content: string;
   created_at: string;
+  updated_at: string;
 }
 
-export interface Violation {
-  id: string;
-  citizen_id: string | null;
-  violation_type: ViolationType;
-  location: string | null;
-  description: string | null;
-  fine_amount: number;
-  status: ViolationStatus;
-  photo_url: string | null;
-  incident_date: string;
-  created_at: string;
-  suspect_name: string | null;
-  suspect_face_descriptor: number[] | null;
-  suspect_photo_url: string | null;
-  source: ViolationSource;
-  due_date: string | null;
-  escalation_level: EscalationLevel;
-  escalated_at: string | null;
-  cctv_camera_name: string | null;
-  citizen?: Citizen | null;
+export interface InvestigationDetail extends Investigation {
+  five_whys: FiveWhy[];
+  fishbone: FishboneCategory[];
+  root_causes: RootCause[];
+  evidence_gaps: EvidenceGap[];
+  capas: Capa[];
 }
 
-export interface ViolationWithCitizen extends Violation {
-  citizen: Citizen;
+export interface AIAnalysisResult {
+  extractedInfo: {
+    title?: string;
+    product_name?: string;
+    batch_number?: string;
+    deviation_date?: string | null;
+    deviation_description?: string;
+    deviation_category?: string;
+    severity?: string;
+    process_step?: string;
+    equipment_involved?: string;
+    material_impact?: string;
+    initial_risk_assessment?: string;
+  };
+  fiveWhys: FiveWhy[];
+  fishbone: FishboneCategory[];
+  rootCauses: RootCause[];
+  evidenceGaps: EvidenceGap[];
+  capas: Capa[];
 }
 
-export const VIOLATION_LABELS: Record<ViolationType, string> = {
-  garbage: 'Improper Garbage Disposal',
-  spitting: 'Spitting in Public',
-  littering: 'Littering in Public Area',
+export const DEVIATION_CATEGORIES: DeviationCategory[] = [
+  'Process',
+  'Equipment',
+  'Analytical',
+  'Documentation',
+  'Environmental',
+  'Material',
+  'Utility',
+  'Other',
+];
+
+export const SEVERITIES: Severity[] = ['Minor', 'Major', 'Critical'];
+
+export const INVESTIGATION_STATUSES: InvestigationStatus[] = ['draft', 'in_progress', 'under_review', 'closed'];
+
+export const STATUS_LABELS: Record<InvestigationStatus, string> = {
+  draft: 'Draft',
+  in_progress: 'In Progress',
+  under_review: 'Under Review',
+  closed: 'Closed',
 };
 
-export const VIOLATION_DEFAULT_FINES: Record<ViolationType, number> = {
-  garbage: 500,
-  spitting: 200,
-  littering: 300,
+export const STATUS_COLORS: Record<InvestigationStatus, string> = {
+  draft: 'bg-slate-100 text-slate-700 border-slate-200',
+  in_progress: 'bg-blue-100 text-blue-700 border-blue-200',
+  under_review: 'bg-amber-100 text-amber-700 border-amber-200',
+  closed: 'bg-emerald-100 text-emerald-700 border-emerald-200',
 };
 
-export const VIOLATION_ICONS: Record<ViolationType, string> = {
-  garbage: 'Trash2',
-  spitting: 'AlertCircle',
-  littering: 'Recycle',
+export const SEVERITY_COLORS: Record<Severity, string> = {
+  Minor: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  Major: 'bg-amber-100 text-amber-700 border-amber-200',
+  Critical: 'bg-red-100 text-red-700 border-red-200',
 };
 
-export const STATUS_LABELS: Record<ViolationStatus, string> = {
-  pending: 'Pending',
-  paid: 'Paid',
-  disputed: 'Disputed',
-  waived: 'Waived',
+export const CONFIDENCE_COLORS: Record<Confidence, string> = {
+  High: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  Medium: 'bg-amber-100 text-amber-700 border-amber-200',
+  Low: 'bg-red-100 text-red-700 border-red-200',
 };
 
-export const STATUS_COLORS: Record<ViolationStatus, string> = {
-  pending: 'bg-amber-100 text-amber-800 border-amber-200',
-  paid: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  disputed: 'bg-red-100 text-red-800 border-red-200',
-  waived: 'bg-gray-100 text-gray-600 border-gray-200',
+export const FISHBONE_CATEGORIES = [
+  'Methods',
+  'Machines',
+  'Materials',
+  'Manpower',
+  'Measurement',
+  'Environment',
+] as const;
+
+export const CAPA_TYPE_LABELS: Record<CapaType, string> = {
+  corrective: 'Corrective Action',
+  preventive: 'Preventive Action',
 };
 
-export const SOURCE_LABELS: Record<ViolationSource, string> = {
-  camera: 'Live Camera',
-  cctv: 'CCTV Footage',
+export const CAPA_TYPE_COLORS: Record<CapaType, string> = {
+  corrective: 'bg-blue-100 text-blue-700 border-blue-200',
+  preventive: 'bg-teal-100 text-teal-700 border-teal-200',
 };
 
-export const ESCALATION_LABELS: Record<EscalationLevel, string> = {
-  0: 'No Action',
-  1: 'First Reminder',
-  2: 'Formal Notice',
-  3: 'Legal Action',
+export const CAPA_STATUS_LABELS: Record<CapaStatus, string> = {
+  proposed: 'Proposed',
+  approved: 'Approved',
+  in_progress: 'In Progress',
+  completed: 'Completed',
 };
 
-export const ESCALATION_DESCRIPTIONS: Record<EscalationLevel, string> = {
-  0: 'Fine is within the payment deadline',
-  1: 'First reminder sent — fine is overdue',
-  2: 'Formal legal notice issued — repeated non-payment',
-  3: 'Legal action initiated — court proceedings',
+export const CAPA_STATUS_COLORS: Record<CapaStatus, string> = {
+  proposed: 'bg-slate-100 text-slate-700 border-slate-200',
+  approved: 'bg-blue-100 text-blue-700 border-blue-200',
+  in_progress: 'bg-amber-100 text-amber-700 border-amber-200',
+  completed: 'bg-emerald-100 text-emerald-700 border-emerald-200',
 };
 
-export const ESCALATION_COLORS: Record<EscalationLevel, string> = {
-  0: 'bg-slate-100 text-slate-600 border-slate-200',
-  1: 'bg-amber-100 text-amber-800 border-amber-200',
-  2: 'bg-orange-100 text-orange-800 border-orange-200',
-  3: 'bg-red-100 text-red-800 border-red-200',
+export const GAP_SIGNIFICANCE_COLORS: Record<GapSignificance, string> = {
+  High: 'bg-red-100 text-red-700 border-red-200',
+  Medium: 'bg-amber-100 text-amber-700 border-amber-200',
+  Low: 'bg-slate-100 text-slate-700 border-slate-200',
 };
-
-export const DEFAULT_PAYMENT_DAYS = 15;
-
-export function isOverdue(violation: Violation): boolean {
-  if (violation.status !== 'pending') return false;
-  if (!violation.due_date) return false;
-  return new Date(violation.due_date).getTime() < Date.now();
-}
-
-export function getDaysOverdue(violation: Violation): number {
-  if (!isOverdue(violation) || !violation.due_date) return 0;
-  const diff = Date.now() - new Date(violation.due_date).getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
-}
-
-export function getDaysUntilDue(violation: Violation): number {
-  if (!violation.due_date) return -1;
-  const diff = new Date(violation.due_date).getTime() - Date.now();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
-export function getDueDateLabel(violation: Violation): string {
-  if (!violation.due_date) return 'No deadline';
-  const days = getDaysUntilDue(violation);
-  if (days < 0) {
-    const overdue = Math.abs(days);
-    return `${overdue} day${overdue !== 1 ? 's' : ''} overdue`;
-  }
-  if (days === 0) return 'Due today';
-  if (days === 1) return 'Due tomorrow';
-  return `${days} days remaining`;
-}
