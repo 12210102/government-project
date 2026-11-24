@@ -1,5 +1,3 @@
-import { createClient } from "npm:@supabase/supabase-js@2.57.4";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -8,7 +6,7 @@ const corsHeaders = {
 
 const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY") ?? "";
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = "openai/gpt-oss-120b";
 
 interface GroqMessage {
   role: "system" | "user" | "assistant";

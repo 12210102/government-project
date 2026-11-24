@@ -19,10 +19,11 @@
 
 ## Decisions, constraints & rationale
 
-- Backend AI via Groq `llama-3.3-70b-versatile` model
+- Backend AI via Groq; model switched from `llama-3.3-70b-versatile` (deprecated for free/developer tiers on 2026-08-16) to `openai/gpt-oss-120b` (Groq-recommended replacement)
 - Edge functions run on Deno; `GROQ_API_KEY` read via `Deno.env.get("GROQ_API_KEY")`
 - LangGraph-style multi-step workflow on backend (extract → 5 Whys → Fishbone → root causes → evidence gaps → CAPA)
 - API key configured as edge function secret; no client-side key exposure
+- Edge function cleanup: removed unused `createClient` import
 - Stack: Vite + React, Tailwind, lucide-react, `@/` path alias
 
 ## Open questions & assumptions
@@ -30,3 +31,4 @@
 - Backend/edge-function host assumed (Supabase-style Deno edge functions) — not yet confirmed
 - PDF text extraction mechanism not specified
 - Persistence layer and RCA record schema not yet documented
+- Groq model availability may change again; monitor deprecation notices
