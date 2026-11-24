@@ -45,7 +45,7 @@ export function AIPanel() {
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-      fullText += content.items.map((item: { str?: string }) => item.str ?? '').join(' ') + '\n';
+      fullText += content.items.map((item) => ('str' in item ? item.str : '')).join(' ') + '\n';
     }
     setSourceText(fullText);
   }, []);
@@ -244,7 +244,7 @@ function ResultView({
   onApply,
   onReset,
 }: {
-  result: NonNullable<ReturnType<typeof useAppSelector>['ai']['result']>;
+  result: import('@/types').AIAnalysisResult;
   onApply: () => void;
   onReset: () => void;
 }) {
@@ -275,7 +275,7 @@ function ResultView({
       {/* 5 Whys summary */}
       {result.fiveWhys.length > 0 && (
         <Section title={`5 Whys (${result.fiveWhys.length} steps)`}>
-          {result.fiveWhys.map((w, i) => (
+          {result.fiveWhys.map((w: import('@/types').FiveWhy, i: number) => (
             <div key={i} className={`rounded-md p-2 text-xs ${w.is_root_cause ? 'bg-blue-50' : ''}`}>
               <p className="font-medium text-slate-700">
                 {w.is_root_cause && 'Root Cause: '}
@@ -290,7 +290,7 @@ function ResultView({
       {/* Root causes summary */}
       {result.rootCauses.length > 0 && (
         <Section title={`Root Causes (${result.rootCauses.length})`}>
-          {result.rootCauses.map((rc, i) => (
+          {result.rootCauses.map((rc: import('@/types').RootCause, i: number) => (
             <div key={i} className="rounded-md bg-amber-50 p-2 text-xs">
               <p className="font-medium text-slate-700">{rc.description}</p>
               <p className="mt-0.5 text-slate-500">Confidence: {rc.confidence}</p>
@@ -302,7 +302,7 @@ function ResultView({
       {/* CAPA summary */}
       {result.capas.length > 0 && (
         <Section title={`CAPA Recommendations (${result.capas.length})`}>
-          {result.capas.map((c, i) => (
+          {result.capas.map((c: import('@/types').Capa, i: number) => (
             <div key={i} className="rounded-md p-2 text-xs">
               <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-medium ${c.type === 'corrective' ? 'bg-blue-100 text-blue-700' : 'bg-teal-100 text-teal-700'}`}>
                 {c.type}
@@ -316,7 +316,7 @@ function ResultView({
       {/* Evidence gaps summary */}
       {result.evidenceGaps.length > 0 && (
         <Section title={`Evidence Gaps (${result.evidenceGaps.length})`}>
-          {result.evidenceGaps.map((g, i) => (
+          {result.evidenceGaps.map((g: import('@/types').EvidenceGap, i: number) => (
             <div key={i} className="rounded-md bg-red-50 p-2 text-xs">
               <p className="text-slate-700">{g.description}</p>
               <p className="mt-0.5 text-slate-500">Significance: {g.significance}</p>

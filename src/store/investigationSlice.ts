@@ -125,7 +125,7 @@ export const saveInvestigation = createAsyncThunk(
 
     if (five_whys.length > 0) {
       inserts.push(
-        supabase.from('five_whys').insert(
+        Promise.resolve(supabase.from('five_whys').insert(
           five_whys.map((w) => ({
             investigation_id: investigationId,
             step_number: w.step_number,
@@ -133,25 +133,25 @@ export const saveInvestigation = createAsyncThunk(
             answer: w.answer,
             is_root_cause: w.is_root_cause,
           })),
-        ),
+        ).then(),
       );
     }
 
     if (fishbone.length > 0) {
       inserts.push(
-        supabase.from('fishbone_categories').insert(
+        Promise.resolve(supabase.from('fishbone_categories').insert(
           fishbone.map((f) => ({
             investigation_id: investigationId,
             category: f.category,
             causes: JSON.stringify(f.causes),
           })),
-        ),
+        ).then(),
       );
     }
 
     if (root_causes.length > 0) {
       inserts.push(
-        supabase.from('root_causes').insert(
+        Promise.resolve(supabase.from('root_causes').insert(
           root_causes.map((r) => ({
             investigation_id: investigationId,
             description: r.description,
@@ -161,26 +161,26 @@ export const saveInvestigation = createAsyncThunk(
             evidence_summary: r.evidence_summary,
             confirmed: r.confirmed,
           })),
-        ),
+        ).then(),
       );
     }
 
     if (evidence_gaps.length > 0) {
       inserts.push(
-        supabase.from('evidence_gaps').insert(
+        Promise.resolve(supabase.from('evidence_gaps').insert(
           evidence_gaps.map((g) => ({
             investigation_id: investigationId,
             description: g.description,
             significance: g.significance,
             status: g.status,
           })),
-        ),
+        ).then(),
       );
     }
 
     if (capas.length > 0) {
       inserts.push(
-        supabase.from('capas').insert(
+        Promise.resolve(supabase.from('capas').insert(
           capas.map((c) => ({
             investigation_id: investigationId,
             type: c.type,
@@ -190,7 +190,7 @@ export const saveInvestigation = createAsyncThunk(
             target_date: c.target_date,
             status: c.status,
           })),
-        ),
+        ).then(),
       );
     }
 
@@ -204,35 +204,35 @@ const investigationSlice = createSlice({
   name: 'investigation',
   initialState,
   reducers: {
-    clearCurrent(state) {
+    clearCurrent(state: InvestigationState) {
       state.current = null;
       state.error = null;
     },
-    startNewInvestigation(state) {
+    startNewInvestigation(state: InvestigationState) {
       state.current = emptyDetail();
       state.error = null;
     },
     updateField<K extends keyof InvestigationDetail>(
-      state,
+      state: InvestigationState,
       action: PayloadAction<{ field: K; value: InvestigationDetail[K] }>,
     ) {
       if (state.current) {
         state.current[action.payload.field] = action.payload.value;
       }
     },
-    setFiveWhys(state, action: PayloadAction<FiveWhy[]>) {
+    setFiveWhys(state: InvestigationState, action: PayloadAction<FiveWhy[]>) {
       if (state.current) state.current.five_whys = action.payload;
     },
-    setFishbone(state, action: PayloadAction<FishboneCategory[]>) {
+    setFishbone(state: InvestigationState, action: PayloadAction<FishboneCategory[]>) {
       if (state.current) state.current.fishbone = action.payload;
     },
-    setRootCauses(state, action: PayloadAction<RootCause[]>) {
+    setRootCauses(state: InvestigationState, action: PayloadAction<RootCause[]>) {
       if (state.current) state.current.root_causes = action.payload;
     },
-    setEvidenceGaps(state, action: PayloadAction<EvidenceGap[]>) {
+    setEvidenceGaps(state: InvestigationState, action: PayloadAction<EvidenceGap[]>) {
       if (state.current) state.current.evidence_gaps = action.payload;
     },
-    setCapas(state, action: PayloadAction<Capa[]>) {
+    setCapas(state: InvestigationState, action: PayloadAction<Capa[]>) {
       if (state.current) state.current.capas = action.payload;
     },
   },
