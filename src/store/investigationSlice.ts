@@ -125,72 +125,82 @@ export const saveInvestigation = createAsyncThunk(
 
     if (five_whys.length > 0) {
       inserts.push(
-        Promise.resolve(supabase.from('five_whys').insert(
-          five_whys.map((w) => ({
-            investigation_id: investigationId,
-            step_number: w.step_number,
-            question: w.question,
-            answer: w.answer,
-            is_root_cause: w.is_root_cause,
-          })),
-        ).then(),
+        Promise.resolve(
+          supabase.from('five_whys').insert(
+            five_whys.map((w) => ({
+              investigation_id: investigationId,
+              step_number: w.step_number,
+              question: w.question,
+              answer: w.answer,
+              is_root_cause: w.is_root_cause,
+            })),
+          ),
+        ),
       );
     }
 
     if (fishbone.length > 0) {
       inserts.push(
-        Promise.resolve(supabase.from('fishbone_categories').insert(
-          fishbone.map((f) => ({
-            investigation_id: investigationId,
-            category: f.category,
-            causes: JSON.stringify(f.causes),
-          })),
-        ).then(),
+        Promise.resolve(
+          supabase.from('fishbone_categories').insert(
+            fishbone.map((f) => ({
+              investigation_id: investigationId,
+              category: f.category,
+              causes: JSON.stringify(f.causes),
+            })),
+          ),
+        ),
       );
     }
 
     if (root_causes.length > 0) {
       inserts.push(
-        Promise.resolve(supabase.from('root_causes').insert(
-          root_causes.map((r) => ({
-            investigation_id: investigationId,
-            description: r.description,
-            category: r.category,
-            contributing_factors: JSON.stringify(r.contributing_factors),
-            confidence: r.confidence,
-            evidence_summary: r.evidence_summary,
-            confirmed: r.confirmed,
-          })),
-        ).then(),
+        Promise.resolve(
+          supabase.from('root_causes').insert(
+            root_causes.map((r) => ({
+              investigation_id: investigationId,
+              description: r.description,
+              category: r.category,
+              contributing_factors: JSON.stringify(r.contributing_factors),
+              confidence: r.confidence,
+              evidence_summary: r.evidence_summary,
+              confirmed: r.confirmed,
+            })),
+          ),
+        ),
       );
     }
 
     if (evidence_gaps.length > 0) {
       inserts.push(
-        Promise.resolve(supabase.from('evidence_gaps').insert(
-          evidence_gaps.map((g) => ({
-            investigation_id: investigationId,
-            description: g.description,
-            significance: g.significance,
-            status: g.status,
-          })),
-        ).then(),
+        Promise.resolve(
+          supabase.from('evidence_gaps').insert(
+            evidence_gaps.map((g) => ({
+              investigation_id: investigationId,
+              description: g.description,
+              significance: g.significance,
+              status: g.status,
+            })),
+          ),
+        ),
       );
     }
 
     if (capas.length > 0) {
       inserts.push(
-        Promise.resolve(supabase.from('capas').insert(
-          capas.map((c) => ({
-            investigation_id: investigationId,
-            type: c.type,
-            description: c.description,
-            rationale: c.rationale,
-            owner: c.owner,
-            target_date: c.target_date,
-            status: c.status,
-          })),
-        ).then(),
+        Promise.resolve(
+          supabase.from('capas').insert(
+            capas.map((c) => ({
+              investigation_id: investigationId,
+              type: c.type,
+              description: c.description,
+              rationale: c.rationale,
+              owner: c.owner,
+              target_date: c.target_date,
+              status: c.status,
+            })),
+          ),
+        ),
       );
     }
 

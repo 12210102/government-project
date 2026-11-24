@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import { analyzeSource } from '@/lib/ai';
-import type { AIAnalysisResult, InvestigationDetail } from '@/types';
+import type { AIAnalysisResult } from '@/types';
 
 export type AIStep =
   | 'extract'
@@ -36,18 +36,13 @@ const aiSlice = createSlice({
   name: 'ai',
   initialState,
   reducers: {
-    clearResult(state) {
+    clearResult(state: AIState) {
       state.result = null;
       state.error = null;
       state.step = null;
     },
-    setStep(state, action: PayloadAction<AIStep | null>) {
+    setStep(state: AIState, action: PayloadAction<AIStep | null>) {
       state.step = action.payload;
-    },
-    applyResultToForm(state, action: PayloadAction<{ investigation: InvestigationDetail }>) {
-      // This is handled by the component via dispatch of investigation actions
-      void action;
-      void state;
     },
   },
   extraReducers: (builder) => {
